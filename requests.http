@@ -1,0 +1,64 @@
+# Manual requests for the running stack (`docker compose up -d`).
+# VS Code: install "REST Client" (humao.rest-client), then click "Send Request" above each request.
+# Ports come from .env (made by `yarn setup`), so they match whatever ports your machine got.
+
+@api = http://localhost:{{$dotenv LB_HOST_PORT}}
+@pos = http://localhost:{{$dotenv FAKE_POS_PORT}}
+
+### 1. Create a check
+# @name create
+POST {{api}}/checks
+Content-Type: application/json
+
+{
+  "restaurantId": "r1",
+  "items": [{ "name": "Koshary", "quantity": 2, "unitPrice": 45 }],
+  "total": 90
+}
+
+### 2. Pay it (answers fast; the worker delivers to the POS in the background)
+POST {{api}}/checks/{{create.response.body.id}}/pay
+
+### 3. Where is it in the POS sync? (pending → synced within a second or two)
+GET {{api}}/checks/{{create.response.body.id}}/sync
+
+### 4. Cancel it (the worker then cancels the POS order)
+POST {{api}}/checks/{{create.response.body.id}}/cancel
+
+### 5. What does the POS hold right now?
+GET {{pos}}/debug/orders
+
+
+### ---------- Permanent rejection (422) and manual retry ----------
+
+### 6. A check the POS will reject: total <= 0
+# @name rejected
+POST {{api}}/checks
+Content-Type: application/json
+
+{
+  "restaurantId": "r1",
+  "items": [{ "name": "Free sample", "quantity": 1, "unitPrice": 0 }],
+  "total": 0
+}
+
+### 7. Pay it
+POST {{api}}/checks/{{rejected.response.body.id}}/pay
+
+### 8. Sync shows status "failed" and the POS's reason in lastError
+GET {{api}}/checks/{{rejected.response.body.id}}/sync
+
+### 9. Retry by hand (202). It will fail again: the total is still 0
+POST {{api}}/checks/{{rejected.response.body.id}}/sync/retry
+
+### 10. Retry on a sync that isn't stopped → 409
+POST {{api}}/checks/{{create.response.body.id}}/sync/retry
+
+
+### ---------- Utilities ----------
+
+### Health of the API behind the load balancer
+GET {{api}}/health
+
+### Empty the fake POS (orders and rate limiter)
+POST {{pos}}/debug/reset

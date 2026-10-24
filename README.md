@@ -34,6 +34,8 @@ curl -X POST localhost:3000/checks/<id>/pay
 curl localhost:3000/checks/<id>/sync
 ```
 
+Or click through [requests.http](requests.http) in VS Code with the REST Client extension (recommended in `.vscode/extensions.json`): create → pay → sync → cancel, a 422 with manual retry, and the POS state. It reads ports from `.env`.
+
 Full contract: [docs/api.md](docs/api.md).
 
 ## Tests
