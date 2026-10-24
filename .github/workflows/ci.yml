@@ -8,6 +8,23 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: eztask
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci -d eztask"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      # Integration tests create and use eztask_test on this server.
+      DATABASE_URL: postgres://ci:ci@localhost:5432/eztask
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,3 +34,5 @@ jobs:
       - run: yarn install --frozen-lockfile
       # Same command as the pre-commit hook, so local and CI can't disagree.
       - run: yarn verify
+      # Needs Postgres, so it runs here and on demand locally, not in the pre-commit hook.
+      - run: yarn test:integration

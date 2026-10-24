@@ -8,8 +8,8 @@
 | [pos-integration.md](pos-integration.md) | How the POS behaves and how we react to each response | Agreed |
 | [sync-state-machine.md](sync-state-machine.md) | Per-check sync model, worker claim/lease, ordering of create/cancel | Proposed |
 | [rate-limiting.md](rate-limiting.md) | Shared per-restaurant limiter across API instances | Proposed |
-| [schema.md](schema.md) | Tables, columns, enums, indexes; who writes which column | Proposed |
-| [api.md](api.md) | Endpoints, check transitions, status codes, `GET /sync` response | Proposed |
+| [schema.md](schema.md) | Tables, columns, enums, indexes; who writes which column | Built |
+| [api.md](api.md) | Endpoints, check transitions, status codes, `GET /sync` response | Built |
 | [fake-pos.md](fake-pos.md) | Fake POS behaviour, request pipeline, choices where the spec is silent, tests | Built |
 | [configuration.md](configuration.md) | Every environment variable, default and meaning (keys in `../local.env`) | Agreed |
 | [risk.md](risk.md) | Risk register: what can go wrong, mitigation, what is left, which test covers it | Proposed |

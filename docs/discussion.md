@@ -179,6 +179,17 @@ orders/
 
 ---
 
+## 12. Building the checks API
+
+- **Transactions without leaking Drizzle into services.** A small `TransactionRunner` opens the transaction; repositories take an optional `tx` and run on it. Services draw the boundary, repositories hold the SQL (rule 14).
+- **Where the sync endpoints live.** `GET/POST /checks/:id/sync` are in the checks module and use `PosSyncRepository`, exported by the sync module. Dependencies go one way (checks → sync); the worker will live in the sync module.
+- **Tokens in their own file** (`db.tokens.ts`): `transaction.ts` and `database.module.ts` imported each other, which in CommonJS can make `@Inject(DB)` see `undefined`.
+- **Malformed ids are 400**, not a Postgres error turned 500 (`ParseUUIDPipe`).
+- **Two test levels.** `yarn test` (unit, no DB) runs in the pre-commit and Stop hooks. `yarn test:integration` (real Postgres, own `<db>_test` database re-created each run) runs in CI with a Postgres service container.
+- **Tests checked against deliberate bugs.** Removing the row lock fails the concurrency test (3 of 3 runs); dropping the outbox write fails 8 tests.
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))

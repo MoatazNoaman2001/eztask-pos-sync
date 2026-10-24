@@ -1,6 +1,6 @@
 # API contract
 
-Status: **Proposed**
+Status: **Built** (`apps/api/src/checks`), covered by `apps/api/test/checks.int.spec.ts`
 
 ## Check transitions
 

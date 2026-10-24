@@ -15,7 +15,8 @@
     "test": "yarn workspaces run test",
     "verify": "yarn typecheck && yarn lint && yarn test",
     "db:generate": "yarn workspace @eztask/api db:generate",
-    "prepare": "husky && node scripts/setup-env.mjs"
+    "prepare": "husky && node scripts/setup-env.mjs",
+    "test:integration": "yarn workspace @eztask/api test:integration"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

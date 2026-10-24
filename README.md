@@ -40,7 +40,8 @@ Full contract: [docs/api.md](docs/api.md).
 
 | Command | What it runs | Needs |
 |---|---|---|
-| `yarn test` | Unit tests + integration tests against a real Postgres | `docker compose up -d postgres` |
+| `yarn test` | Unit tests (no database). Also run by the pre-commit hook | Nothing |
+| `yarn test:integration` | API against a real Postgres: transactions, row locks, concurrent pay/cancel. Uses a throw-away `<db>_test` database | `docker compose up -d postgres` |
 | `yarn test:chaos` | Starts the stack with `docker-compose.chaos.yml` (all failure modes on), then: 200+ checks, ~20% cancelled, one API instance killed and restarted mid-run, then verifies the POS | Docker |
 
 The chaos test takes a few minutes: the POS allows 5 requests / 10 s per restaurant, so it is throughput-bound by design ([why](docs/rate-limiting.md#throughput-cost-affects-the-chaos-test)).

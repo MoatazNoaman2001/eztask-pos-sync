@@ -15,7 +15,8 @@ yarn install
 docker compose up            # postgres, migrate, api-1, api-2, fake-pos
 yarn typecheck
 yarn lint
-yarn test                    # unit + real-Postgres integration tests
+yarn test                    # unit tests, no database (pre-commit + Stop hook run this)
+yarn test:integration        # real Postgres; needs `docker compose up -d postgres`; CI runs it
 yarn test:chaos              # takes minutes (rate limit), needs compose running
 yarn db:generate             # after editing schema.ts
 ```

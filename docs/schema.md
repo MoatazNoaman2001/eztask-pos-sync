@@ -1,6 +1,6 @@
 # Database schema
 
-Status: **Proposed**. Drizzle source of truth will be `apps/api/src/db/schema.ts`; migrations generated with `yarn db:generate`.
+Status: **Built**. Drizzle source of truth will be `apps/api/src/db/schema.ts`; migrations generated with `yarn db:generate`.
 
 ## Enums
 

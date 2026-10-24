@@ -8,7 +8,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "jest --passWithNoTests",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env dist/db/migrate.js"
+    "db:migrate": "tsc -p tsconfig.build.json && node --env-file-if-exists=../../.env dist/db/migrate.js",
+    "test:integration": "jest -c jest.integration.json --runInBand"
   },
   "jest": {
     "preset": "ts-jest",
@@ -16,6 +17,10 @@
     "testMatch": [
       "<rootDir>/src/**/*.spec.ts",
       "<rootDir>/test/**/*.spec.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      ".int.spec.ts$"
     ]
   },
   "dependencies": {
