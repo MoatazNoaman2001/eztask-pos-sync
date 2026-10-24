@@ -11,12 +11,9 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "roots": [
-      "<rootDir>/src",
-      "<rootDir>/test"
-    ],
     "testMatch": [
-      "**/*.spec.ts"
+      "<rootDir>/src/**/*.spec.ts",
+      "<rootDir>/test/**/*.spec.ts"
     ]
   },
   "dependencies": {
