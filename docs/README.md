@@ -16,6 +16,6 @@
 
 [`CLAUDE.md`](../CLAUDE.md) lives at the repo root (Claude Code only loads it from there). Its hard rules come from these docs: keep them in sync.
 
-`DECISIONS.md` (the 2-page deliverable at the repo root) is distilled from these files once the design is final.
+[`DECISIONS.md`](../DECISIONS.md) (the 2-page deliverable at the repo root) is distilled from these files.
 
 Status meanings: **Built** = implemented and tested. **Agreed** = discussed and accepted. **Proposed** = drafted, still to be reviewed.

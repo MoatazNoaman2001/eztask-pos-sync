@@ -229,6 +229,6 @@ orders/
 - [x] Timeout and lease values: HTTP 10 s, lease 30 s
 - [x] `CLAUDE.md`
 - [x] `.claude/settings.json`, hooks, pre-commit
-- [ ] `DECISIONS.md` (distil from these docs)
+- [x] `DECISIONS.md` (distilled from these docs)
 - [x] Chaos test passing repeatedly, and failing on a broken build
 - [x] How a reviewer gets `.env` values on a fresh clone (`yarn setup`)
