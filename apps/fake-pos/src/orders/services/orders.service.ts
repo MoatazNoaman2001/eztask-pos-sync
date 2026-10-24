@@ -8,11 +8,12 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { ChaosService } from '../chaos/chaos.service';
-import { SlidingWindowLimiter } from '../rate-limit/sliding-window.limiter';
-import { CreateOrderDto, ListOrdersQuery } from './orders.dto';
-import { PosOrder } from './order.types';
-import { OrdersStore } from './orders.store';
+import { ChaosService } from '../../chaos/chaos.service';
+import { SlidingWindowLimiter } from '../../rate-limit/sliding-window.limiter';
+import { CreateOrderDto } from '../dto/create-order.dto';
+import { ListOrdersQuery } from '../dto/list-orders.query';
+import { PosOrder } from '../types/pos-order';
+import { OrdersRepository } from '../repositories/orders.repository';
 
 /**
  * Behaves like the third-party POS in the spec, including its bad habits:
@@ -25,7 +26,7 @@ export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
   constructor(
-    private readonly store: OrdersStore,
+    private readonly repository: OrdersRepository,
     private readonly limiter: SlidingWindowLimiter,
     private readonly chaos: ChaosService,
   ) {}
@@ -53,7 +54,7 @@ export class OrdersService {
       createdAt: new Date().toISOString(),
       cancelledAt: null,
     };
-    this.store.save(order);
+    this.repository.save(order);
 
     // The nasty case: the order exists, but the caller times out before hearing about it.
     if (this.chaos.shouldHangAfterCreate()) {
@@ -69,12 +70,12 @@ export class OrdersService {
     this.enforceRateLimit(query.restaurantId);
     this.maybeFail('lookup', query.externalRef);
     await this.chaos.maybeBeSlow();
-    return this.store.findByExternalRef(query.externalRef);
+    return this.repository.findByExternalRef(query.externalRef);
   }
 
   async cancel(posOrderId: string): Promise<PosOrder> {
     // Look the order up first: cancel requests carry no restaurantId, the order does.
-    const order = this.store.findById(posOrderId);
+    const order = this.repository.findById(posOrderId);
     if (!order) throw new NotFoundException(`POS order ${posOrderId} not found`);
 
     this.enforceRateLimit(order.restaurantId);

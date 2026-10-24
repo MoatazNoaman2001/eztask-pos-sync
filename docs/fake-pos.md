@@ -64,11 +64,14 @@ src/
   rate-limit/sliding-window.limiter.ts   per-key sliding window, clock injected for tests
   chaos/chaos.service.ts            the only place with randomness and waiting
   orders/
-    orders.controller.ts            HTTP routes
-    orders.service.ts               the request pipeline above
-    orders.store.ts                 in-memory storage
-    orders.dto.ts                   request validation
-    debug.controller.ts             /debug/orders, /debug/reset
+    orders.module.ts
+    controllers/orders.controller.ts      HTTP routes only
+    controllers/debug.controller.ts       /debug/orders, /debug/reset (tests only)
+    services/orders.service.ts            business rules: the request pipeline above
+    repositories/orders.repository.ts     data access: the only place that reads/writes orders
+    dto/create-order.dto.ts               request validation
+    dto/list-orders.query.ts
+    types/pos-order.ts
   configure-app.ts                  shared by main.ts and the e2e tests
 test/
   stub-chaos.ts                     deterministic ChaosService, typed against the real one

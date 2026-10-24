@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { ChaosService } from '../chaos/chaos.service';
 import { loadPosConfig, POS_CONFIG, PosConfig } from '../config/pos.config';
 import { SlidingWindowLimiter } from '../rate-limit/sliding-window.limiter';
-import { DebugController } from './debug.controller';
-import { OrdersController } from './orders.controller';
-import { OrdersService } from './orders.service';
-import { OrdersStore } from './orders.store';
+import { DebugController } from './controllers/debug.controller';
+import { OrdersController } from './controllers/orders.controller';
+import { OrdersService } from './services/orders.service';
+import { OrdersRepository } from './repositories/orders.repository';
 
 @Module({
   controllers: [OrdersController, DebugController],
   providers: [
     OrdersService,
-    OrdersStore,
+    OrdersRepository,
     ChaosService,
     { provide: POS_CONFIG, useFactory: () => loadPosConfig() },
     {

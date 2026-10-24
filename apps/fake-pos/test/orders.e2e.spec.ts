@@ -5,7 +5,7 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { ChaosService } from '../src/chaos/chaos.service';
 import { configureApp } from '../src/configure-app';
-import { PosOrder } from '../src/orders/order.types';
+import { PosOrder } from '../src/orders/types/pos-order';
 import { StubChaos } from './stub-chaos';
 
 // Runs the real app over HTTP; only randomness is replaced (StubChaos).

@@ -1,7 +1,8 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
-import { CreateOrderDto, ListOrdersQuery } from './orders.dto';
-import { PosOrder } from './order.types';
-import { OrdersService } from './orders.service';
+import { CreateOrderDto } from '../dto/create-order.dto';
+import { ListOrdersQuery } from '../dto/list-orders.query';
+import { PosOrder } from '../types/pos-order';
+import { OrdersService } from '../services/orders.service';
 
 @Controller('orders')
 export class OrdersController {

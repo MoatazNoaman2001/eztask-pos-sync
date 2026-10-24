@@ -148,6 +148,25 @@ Choices where the spec is silent (full list in [fake-pos.md](fake-pos.md#choices
 
 ---
 
+## 10. Folder structure inside a module
+
+Nest's docs put a feature's files side by side (`orders.controller.ts`, `orders.service.ts`, …). We use **layer folders inside each feature module** instead:
+
+```
+orders/
+  controllers/    HTTP only: parse, validate, call the service
+  services/       business rules
+  repositories/   data access (DAO): the only place with storage / SQL
+  dto/            request shapes + validation
+  types/          domain types
+```
+
+**Why:** clear boundaries once Postgres arrives. Services never touch the database, so they can be unit-tested with a fake repository; repositories are tested against real Postgres. Same layout in `apps/api`, so both apps read the same way.
+
+**Decision:** layer folders per feature module. Added to `CLAUDE.md` as a hard rule.
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))

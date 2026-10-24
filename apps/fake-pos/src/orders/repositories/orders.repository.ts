@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PosOrder } from './order.types';
+import { PosOrder } from '../types/pos-order';
 
 // In memory on purpose: the fake POS runs as one instance and the chaos test never kills it.
 @Injectable()
-export class OrdersStore {
+export class OrdersRepository {
   private readonly orders = new Map<string, PosOrder>();
 
   save(order: PosOrder): void {

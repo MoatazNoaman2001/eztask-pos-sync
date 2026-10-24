@@ -36,6 +36,7 @@ Env keys: `local.env` (names only, never put values there). Meanings and default
 11. **Sync, lease and rate-limit tests run against real Postgres.** Do not mock the database for them.
 12. **Strict TypeScript:** no `any`, no `@ts-ignore`, no non-null `!` to silence errors.
 13. **Do not "fix" the fake POS.** It is non-idempotent and fails on purpose, as the spec says.
+14. **Layers inside each feature module:** `controllers/` (HTTP only) → `services/` (rules) → `repositories/` (the only code that touches storage/SQL). Plus `dto/` and `types/`. A service never imports the Drizzle client.
 
 ## When you change the design
 Update the matching file in `docs/` and add a short entry to `docs/discussion.md` saying what changed and why.
