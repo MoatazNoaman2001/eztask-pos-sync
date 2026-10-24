@@ -42,9 +42,9 @@ Full contract: [docs/api.md](docs/api.md).
 |---|---|---|
 | `yarn test` | Unit tests (no database). Also run by the pre-commit hook | Nothing |
 | `yarn test:integration` | API against a real Postgres: transactions, row locks, concurrent pay/cancel. Uses a throw-away `<db>_test` database | `docker compose up -d postgres` |
-| `yarn test:chaos` | Starts the stack with `docker-compose.chaos.yml` (all failure modes on), then: 200+ checks, ~20% cancelled, one API instance killed and restarted mid-run, then verifies the POS | Docker |
+| `yarn test:chaos` | Starts the stack with `docker-compose.chaos.yml` (all failure modes on), then: 220 checks over 10 restaurants, ~20% cancelled, `api-1` killed (SIGKILL) and restarted mid-run, waits until every sync settles, verifies the POS. Restores the normal stack at the end | Docker. **Wipes the local database and the POS first** |
 
-The chaos test takes a few minutes: the POS allows 5 requests / 10 s per restaurant, so it is throughput-bound by design ([why](docs/rate-limiting.md#throughput-cost-affects-the-chaos-test)).
+The chaos test takes about 4–6 minutes (plus the image build on the first run): the POS allows 5 requests / 10 s per restaurant, so it is throughput-bound by design ([why](docs/rate-limiting.md#throughput-cost-affects-the-chaos-test)). Failure rates come from `CHAOS_*` in `.env`. It prints progress every 5 s and exits non-zero if any check fails.
 
 It checks that:
 - every paid, non-cancelled check has exactly one open POS order,

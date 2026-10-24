@@ -7,7 +7,7 @@ Design lives in `docs/` — read `docs/architecture.md` and `docs/sync-state-mac
 ## Layout
 - `apps/api` — NestJS API + sync workers (Drizzle schema in `apps/api/src/db/schema.ts`)
 - `apps/fake-pos` — NestJS fake POS used by tests and compose
-- `test/chaos` — chaos test (2 API instances, all failure modes, kill + restart)
+- `test/chaos/chaos.mjs` — chaos test (2 API instances, all failure modes, kill + restart); black-box, plain Node
 
 ## Commands
 ```
