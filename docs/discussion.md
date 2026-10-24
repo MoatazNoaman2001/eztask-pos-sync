@@ -122,6 +122,20 @@ When Redis/Kafka would win: polling load on Postgres becomes the bottleneck (≈
 
 ---
 
+## 8. Version control workflow
+
+Options: commit straight to `main`; a long-lived `dev` branch merged at the end; short-lived feature branches merged through PRs.
+
+**Decision:** commit straight to `main`. One developer, one day: branches and PRs add ceremony without catching anything the hooks don't already catch.
+What keeps `main` healthy instead:
+- small commits, one concern each, messages that say *why*;
+- the pre-commit hook runs the same checks as CI, so every commit on `main` type-checks, lints and passes unit tests;
+- history is never squashed or rewritten (the spec reads it).
+
+With a team, we would switch to feature branches + PRs with required CI, merged without squashing.
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))
