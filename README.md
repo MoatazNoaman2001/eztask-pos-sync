@@ -75,3 +75,11 @@ apps/fake-pos   NestJS fake POS
 test/chaos      Chaos test
 docs/           Design notes
 ```
+
+## Time spent
+
+About 5¼ hours, within the 5–7 hour budget:
+- **~1¾ h design** before any code: reading the task, comparing designs, writing `docs/` and `CLAUDE.md`. The first commit is the design, not code.
+- **~3½ h building and testing**, visible in the commit history (first commit 21:17, `DECISIONS.md` at 00:47).
+
+Claude Code wrote most of the code under the rules and hooks above. Every part was reviewed, and the key safety rules were checked by breaking them on purpose and confirming the tests fail.
