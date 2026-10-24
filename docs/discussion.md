@@ -136,6 +136,18 @@ With a team, we would switch to feature branches + PRs with required CI, merged 
 
 ---
 
+## 9. Building the fake POS
+
+Choices where the spec is silent (full list in [fake-pos.md](fake-pos.md#choices-we-made-spec-is-silent)):
+- **Only accepted requests count** toward the rate limit, so backing off after a 429 works.
+- **`FAIL_RATE` and `SLOW_RATE` hit every endpoint**, `TIMEOUT_AFTER_CREATE_RATE` only create.
+- **Cancel is repeatable** (200 on an already-cancelled order).
+- **`POST /debug/reset`** added so chaos runs start clean without restarting containers.
+- **Testability:** all randomness and waiting live in `ChaosService`; tests swap it for `StubChaos` (typed against the real one) and trigger each failure on purpose. The limiter takes an injected clock.
+- **Env template:** `local.env` lists every key with no values; compose holds working values. Avoids a half-filled file being mistaken for real config.
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))

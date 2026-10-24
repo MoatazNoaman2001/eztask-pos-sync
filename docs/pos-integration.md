@@ -7,8 +7,9 @@ Status: **Agreed**
 | Endpoint | Does | Notes |
 |---|---|---|
 | `POST /orders` `{ externalRef, restaurantId, items, total }` | Creates an order → `201 { posOrderId }` | **Not idempotent**: same `externalRef` twice = two orders |
-| `GET /orders?externalRef=...&restaurantId=...` | Lists orders with that `externalRef` | `restaurantId` added by us so the call is rate-limited per restaurant (discussion §4.2) |
-| `POST /orders/:posOrderId/cancel` | Cancels → `200` | Restaurant resolved from the stored order |
+| `GET /orders?externalRef=...&restaurantId=...` | Lists orders with that `externalRef` | `restaurantId` added by us and **required** (400 without it), so the call is rate-limited per restaurant (discussion §4.2) |
+| `POST /orders/:posOrderId/cancel` | Cancels → `200` (also 200 if already cancelled) | Restaurant resolved from the stored order; 404 if unknown |
+| `POST /debug/reset` | Clears orders and limiter | Added by us for test isolation |
 | `GET /debug/orders` | Every order held | Used by tests only |
 
 We always send `externalRef = checkId`.
