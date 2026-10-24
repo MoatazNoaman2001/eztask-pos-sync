@@ -212,6 +212,16 @@ orders/
 
 ---
 
+## 15. Chaos test
+
+- **Black-box on purpose:** a plain Node script that only uses HTTP through the load balancer, the POS `/debug` endpoints and `docker compose`. It would catch bugs in wiring (nginx, compose, migrations) that in-process tests can't.
+- **Clean start every run:** `POST /debug/reset` and a `TRUNCATE` of our tables, so condition 3 ("no stray POS orders") is checked against this run only. Documented in the README as wiping local data.
+- **Settled = every check's `GET /sync` is `synced`**, polled every 5 s with a 10-minute cap. A `failed` sync fails the run (totals are all > 0, so none is expected).
+- **Cancels in two timings:** half right after paying (usually before the create was sent), half 3–8 s later (usually after), so both orders of events are exercised.
+- **Results:** passed 2 of 2 runs (≈3.5 min each). Against a deliberately broken build (after an unknown create, create again instead of looking up) it **failed with 16 duplicate orders**: the test has teeth.
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))
@@ -220,4 +230,5 @@ orders/
 - [x] `CLAUDE.md`
 - [x] `.claude/settings.json`, hooks, pre-commit
 - [ ] `DECISIONS.md` (distil from these docs)
+- [x] Chaos test passing repeatedly, and failing on a broken build
 - [x] How a reviewer gets `.env` values on a fresh clone (`yarn setup`)
