@@ -40,6 +40,7 @@ Columns: **G** = guarantee affected (1–5, see [architecture.md](architecture.m
 | C6 | Chaos test flaky because "settled" is guessed with a fixed sleep | Poll until every sync row is `synced` or `failed`, with a hard timeout | Long runs with high failure rates; tune rates/timeout |
 | C7 | Chaos test is slow: rate limit caps throughput (~0.4 req/s per restaurant) | Spread 200 checks over ~10 restaurants | Run takes minutes, not seconds — documented in README |
 | C8 | No data isolation between restaurants in the database | Out of scope: the task has no auth or tenants. In production: Postgres Row-Level Security per restaurant, or tenant checks in every query | Accepted |
+| C9 | Fake POS restart loses every order (in memory) → our lookups find nothing → duplicate creates; chaos verification sees an empty POS | Fake POS is never restarted by the chaos test. Options considered: JSON-file snapshot on a volume (~15 lines), Postgres (heavy for a test double) | **Accepted** to keep the fake small, as the spec asks. A real POS persists orders, so this is a test-environment limit, not a design gap |
 
 ## D. Spec assumptions (risk if we guessed wrong)
 

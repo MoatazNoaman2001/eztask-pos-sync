@@ -41,7 +41,7 @@ Every POS endpoint runs the same steps, in this order:
 | `FAIL_RATE` and `SLOW_RATE` apply to **all** POS endpoints | Lookups and cancels fail in real life too; makes the chaos test harder |
 | `TIMEOUT_AFTER_CREATE_RATE` applies to **create only** | As named in the spec |
 | 422 checked **after** the random 500 | A 422 check may first see a 500 and be retried; it still ends in 422 |
-| In-memory storage | One instance, never killed by the chaos test; keeps the fake small |
+| In-memory storage | One instance, never killed by the chaos test; keeps the fake small. Restarting it loses all orders: accepted, see [risk C9](risk.md#c-operational-risks) |
 | Invalid rate (e.g. `FAIL_RATE=30`) **stops startup** | A typo would otherwise silently break every request |
 | `POST /debug/reset` (not in spec) | Each chaos run starts from an empty POS without restarting the container |
 

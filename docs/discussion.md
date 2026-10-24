@@ -167,11 +167,24 @@ orders/
 
 ---
 
+## 11. Where config values live
+
+**Decision:** `docker-compose.yml` holds no values and no defaults: every value is `${VAR:?…}` read from a git-ignored `.env`. `local.env` lists the keys with empty values. A missing value fails loudly at `docker compose up`.
+
+**Why:** one source of truth for values (the env), nothing that looks like config but silently overrides it, and compose behaves like a real deployment where values are injected.
+
+**Found while doing it:** the host already runs a Windows PostgreSQL service on 5432, so connecting to "localhost:5432" reached the wrong database and failed authentication. The host port is now `POSTGRES_HOST_PORT`.
+
+**Open:** a reviewer cloning fresh needs values. To decide: how they get them (see Open items).
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))
 - [x] Database schema
 - [x] Timeout and lease values: HTTP 10 s, lease 30 s
 - [x] `CLAUDE.md`
-- [ ] `.claude/settings.json`, hooks, pre-commit
+- [x] `.claude/settings.json`, hooks, pre-commit
 - [ ] `DECISIONS.md` (distil from these docs)
+- [ ] How a reviewer gets `.env` values on a fresh clone

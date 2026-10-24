@@ -1,10 +1,21 @@
 # Configuration
 
-All keys are listed, without values, in [`local.env`](../local.env). `docker-compose.yml` sets working values for every service. Real secrets never go in the repo: `.env` is git-ignored and Claude is denied from reading it.
+All keys are listed, without values, in [`local.env`](../local.env). Copy it to `.env` (git-ignored) and fill it in.
+
+- **docker compose** reads `.env` automatically. The compose file has **no values and no defaults**: every value is `${VAR:?…}`, so a missing one stops compose with a clear error instead of starting with a blank.
+- **yarn scripts** that run outside Docker (e.g. `db:migrate`) load it with Node's built-in `--env-file-if-exists`; no dotenv package.
+- Claude is denied from reading `.env` (`.claude/settings.json`).
+
+## postgres (docker compose)
+
+| Variable | Meaning |
+|---|---|
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Database credentials and name |
+| `POSTGRES_HOST_PORT` | Port published on your machine. Pick a free one if a local Postgres already uses 5432 |
 
 ## api
 
-Status: **Planned** (wired up with the API).
+Status: **Partly built**: config loading and validation done (`apps/api/src/config/api.config.ts`); sync settings used once the worker lands.
 
 | Variable | Default | Meaning |
 |---|---|---|
