@@ -15,12 +15,12 @@ docker compose up --build -d      # the system: postgres, migrate, api-1, api-2,
 yarn test:chaos                   # restarts the stack with every POS failure mode on, then runs the chaos test
 ```
 
-`yarn install` runs `yarn setup`, which creates a git-ignored `.env` from the keys in [local.env](local.env): local values, a random database password, and a free host port for Postgres. It never overwrites an existing `.env`. Details: [docs/configuration.md](docs/configuration.md).
+`yarn install` runs `yarn setup`, which creates a git-ignored `.env` from the keys in [local.env](local.env): local values, a random database password, and free host ports. On an existing `.env` it only adds missing keys and fills empty ones; values you set are never changed. The ports actually used are printed by `docker compose ps`. Details: [docs/configuration.md](docs/configuration.md).
 
 | Service | URL | What it is |
 |---|---|---|
-| `lb` | http://localhost:3000 | Load balancer in front of `api-1` and `api-2` |
-| `fake-pos` | http://localhost:4000 | Fake POS (failure modes set in `docker-compose.yml`) |
+| `lb` | http://localhost:`LB_HOST_PORT` (3000 if free) | nginx load balancer in front of `api-1` and `api-2` |
+| `fake-pos` | http://localhost:`FAKE_POS_PORT` (4000 if free) | Fake POS. Failure rates from `.env`; `docker-compose.chaos.yml` switches them all on |
 | `postgres` | localhost:`POSTGRES_HOST_PORT` (from `.env`) | Database |
 
 Stop everything: `docker compose down` (add `-v` to wipe the database).

@@ -1,0 +1,19 @@
+# Rendered by the nginx image at startup: ${API_PORT} is replaced from the environment.
+upstream api {
+    server api-1:${API_PORT} max_fails=1 fail_timeout=5s;
+    server api-2:${API_PORT} max_fails=1 fail_timeout=5s;
+}
+
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://api;
+        proxy_set_header Host $host;
+        # If an instance is down (killed in a deploy or by the chaos test), try the other one.
+        # nginx only retries requests that never reached the dead instance, so a POST is never
+        # sent twice by the load balancer itself.
+        proxy_next_upstream error timeout;
+        proxy_connect_timeout 2s;
+    }
+}

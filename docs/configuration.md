@@ -2,7 +2,7 @@
 
 All keys are listed, without values, in [`local.env`](../local.env). `yarn setup` (also run by `yarn install`) creates a git-ignored `.env` from it:
 - local development values, a **random** database password, and the first **free** host port from 5432 (checked by connecting, since Windows lets a bind succeed on a port Docker already serves);
-- never overwrites an existing `.env`;
+- on an existing `.env`, only adds missing keys and fills empty ones (except `INSTANCE_ID`, where empty is valid); values you set are never changed, so re-run it after pulling;
 - fails if `local.env` gains a key the script has no value for, so the two can't drift apart.
 
 Edit `.env` freely afterwards; delete it and run `yarn setup` to start over.
@@ -17,6 +17,12 @@ Edit `.env` freely afterwards; delete it and run `yarn setup` to start over.
 |---|---|
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Database credentials and name |
 | `POSTGRES_HOST_PORT` | Port published on your machine. Pick a free one if a local Postgres already uses 5432 |
+
+## load balancer (docker compose)
+
+| Variable | Meaning |
+|---|---|
+| `LB_HOST_PORT` | Port on your machine for the API, behind nginx (`deploy/nginx/default.conf.template`) |
 
 ## api
 
@@ -50,3 +56,13 @@ Status: **Built**. See [fake-pos.md](fake-pos.md#configuration).
 | `SLOW_RATE` | `0` | 0–1 |
 
 Rates outside 0–1 stop startup with a clear error.
+
+## chaos test
+
+Used by `docker-compose.chaos.yml`, which overrides the fake POS rates above.
+
+| Variable | Local value | Meaning |
+|---|---|---|
+| `CHAOS_FAIL_RATE` | `0.2` | `FAIL_RATE` during the chaos test |
+| `CHAOS_TIMEOUT_AFTER_CREATE_RATE` | `0.1` | `TIMEOUT_AFTER_CREATE_RATE` during the chaos test |
+| `CHAOS_SLOW_RATE` | `0.1` | `SLOW_RATE` during the chaos test |

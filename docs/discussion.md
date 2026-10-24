@@ -201,6 +201,17 @@ orders/
 
 ---
 
+## 14. The compose stack
+
+- **One image for both apps** (multi-stage `Dockerfile`): each service picks its command. Production dependencies only in the final stage; `--ignore-scripts` so `prepare` (git hooks, `.env` setup) never runs in an image.
+- **Start order by health, not by sleeps:** postgres healthy → `migrate` completes → fake-pos healthy → `api-1`/`api-2` healthy → `lb`.
+- **nginx** retries the other instance only when a request never reached the dead one (its default for POST). The chaos client retries `/pay` and `/cancel` itself, which is safe because both are no-ops when repeated.
+- **Only wiring is written in compose** (service names, URLs built from them, `INSTANCE_ID: api-1`). Every value, including chaos rates, comes from `.env`.
+- **`yarn setup` now completes an existing `.env`**: adds missing keys, fills empty ones, never changes set values, prints key names only. Needed because new keys (`LB_HOST_PORT`, `CHAOS_*`) appear as the project grows.
+- **Claude can't read `.env`**, not even with `grep`: the deny rule held when Claude tried to list empty keys. The setup script reports names instead.
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))

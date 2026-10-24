@@ -5,15 +5,16 @@ Status: **Agreed** (design choice C — transactional outbox in Postgres). Reaso
 ## Components
 
 ```
-                    ┌──────────────── docker compose ────────────────┐
-                    │                                                 │
-Customer ──HTTP──►  │  api-1 ─┐                                       │
-                    │         ├──► postgres  (checks, pos_sync,       │
-                    │  api-2 ─┘              rate-limit state)        │
-                    │    │                                            │
-                    │    └── workers (in each api instance) ──HTTP──► fake-pos
-                    │                                                 │
-                    └─────────────────────────────────────────────────┘
+            ┌────────────────────── docker compose ──────────────────────┐
+            │                                                             │
+Customer ───┼──► lb ──┬──► api-1 ──┐                                       │
+            │  (nginx) └──► api-2 ──┼──► postgres  (checks, pos_sync,      │
+            │                       │              rate-limit state)     │
+            │                       │                                    │
+            │      workers inside each api instance ──HTTP──► fake-pos   │
+            │                                                             │
+            │  migrate: runs once before api-1 / api-2 start              │
+            └─────────────────────────────────────────────────────────────┘
 ```
 
 | Component | Role |
@@ -21,6 +22,7 @@ Customer ──HTTP──►  │  api-1 ─┐                                 
 | `api-1`, `api-2` | Identical NestJS app. Serves HTTP endpoints **and** runs sync workers. Any instance can die at any time. |
 | `postgres` | Single source of truth: checks, sync state, rate-limit state. All coordination between instances goes through it. |
 | `fake-pos` | Separate NestJS app imitating the third-party POS, with configurable failure modes. |
+| `lb` | nginx in front of `api-1` and `api-2`. Retries the other instance only for requests that never reached a dead one, so it never sends a POST twice |
 | `migrate` | One-shot container: runs Drizzle migrations, then exits. `api-1` and `api-2` start only after it succeeds, so two instances never migrate at the same time ([risk C1](risk.md#c-operational-risks)). |
 
 No Redis / BullMQ: the design does not need them (see discussion §2, option D).

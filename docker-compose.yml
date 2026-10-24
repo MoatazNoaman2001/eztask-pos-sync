@@ -1,6 +1,34 @@
-# Every value comes from the environment (a git-ignored .env next to this file, or the shell).
+# Every value comes from the environment (a git-ignored .env next to this file, made by `yarn setup`).
 # Keys are listed in local.env. `${VAR:?}` makes compose stop with an error if one is missing,
-# instead of silently starting with an empty value.
+# instead of silently starting with an empty value. Only wiring lives here: service names and
+# the URLs built from them.
+
+x-api: &api
+  build: .
+  command: ["node", "apps/api/dist/main.js"]
+  restart: unless-stopped
+  environment: &api-env
+    PORT: ${PORT:?set PORT in .env}
+    DATABASE_URL: postgres://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:?}
+    POS_BASE_URL: http://fake-pos:${FAKE_POS_PORT:?set FAKE_POS_PORT in .env}
+    POS_HTTP_TIMEOUT_MS: ${POS_HTTP_TIMEOUT_MS:?set POS_HTTP_TIMEOUT_MS in .env}
+    SYNC_LEASE_MS: ${SYNC_LEASE_MS:?set SYNC_LEASE_MS in .env}
+    SYNC_WORKER_ENABLED: ${SYNC_WORKER_ENABLED:?set SYNC_WORKER_ENABLED in .env}
+    SYNC_POLL_INTERVAL_MS: ${SYNC_POLL_INTERVAL_MS:?set SYNC_POLL_INTERVAL_MS in .env}
+    SYNC_BATCH_SIZE: ${SYNC_BATCH_SIZE:?set SYNC_BATCH_SIZE in .env}
+    RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:?set RATE_LIMIT_MAX_REQUESTS in .env}
+    RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:?set RATE_LIMIT_WINDOW_MS in .env}
+  healthcheck:
+    test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:$${PORT}/health || exit 1"]
+    interval: 2s
+    timeout: 3s
+    retries: 30
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+    fake-pos:
+      condition: service_healthy
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -17,6 +45,64 @@ services:
       interval: 2s
       timeout: 3s
       retries: 30
+
+  # Applies migrations once, then exits. API instances wait for it, so two instances never
+  # migrate at the same time (docs/risk.md C1).
+  migrate:
+    build: .
+    command: ["node", "apps/api/dist/db/migrate.js"]
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:?}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  fake-pos:
+    build: .
+    command: ["node", "apps/fake-pos/dist/main.js"]
+    restart: unless-stopped
+    environment:
+      FAKE_POS_PORT: ${FAKE_POS_PORT:?set FAKE_POS_PORT in .env}
+      FAIL_RATE: ${FAIL_RATE:?set FAIL_RATE in .env}
+      TIMEOUT_AFTER_CREATE_RATE: ${TIMEOUT_AFTER_CREATE_RATE:?set TIMEOUT_AFTER_CREATE_RATE in .env}
+      SLOW_RATE: ${SLOW_RATE:?set SLOW_RATE in .env}
+    ports:
+      - "${FAKE_POS_PORT}:${FAKE_POS_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:$${FAKE_POS_PORT}/health || exit 1"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Two identical instances, as the spec requires. INSTANCE_ID shows up in pos_sync.lease_owner.
+  api-1:
+    <<: *api
+    environment:
+      <<: *api-env
+      INSTANCE_ID: api-1
+
+  api-2:
+    <<: *api
+    environment:
+      <<: *api-env
+      INSTANCE_ID: api-2
+
+  lb:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    environment:
+      API_PORT: ${PORT:?set PORT in .env}
+      # Only render our variable; leave nginx's own $host etc. alone.
+      NGINX_ENVSUBST_FILTER: API_PORT
+    volumes:
+      - ./deploy/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports:
+      - "${LB_HOST_PORT:?set LB_HOST_PORT in .env}:80"
+    depends_on:
+      api-1:
+        condition: service_healthy
+      api-2:
+        condition: service_healthy
 
 volumes:
   pgdata:

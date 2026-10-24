@@ -1,0 +1,9 @@
+# Overlay used by `yarn test:chaos`: same stack, with every POS failure mode switched on.
+#   docker compose -f docker-compose.yml -f docker-compose.chaos.yml up
+# Rates come from .env (CHAOS_* keys), like every other value.
+services:
+  fake-pos:
+    environment:
+      FAIL_RATE: ${CHAOS_FAIL_RATE:?set CHAOS_FAIL_RATE in .env}
+      TIMEOUT_AFTER_CREATE_RATE: ${CHAOS_TIMEOUT_AFTER_CREATE_RATE:?set CHAOS_TIMEOUT_AFTER_CREATE_RATE in .env}
+      SLOW_RATE: ${CHAOS_SLOW_RATE:?set CHAOS_SLOW_RATE in .env}
