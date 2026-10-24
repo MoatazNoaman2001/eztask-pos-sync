@@ -1,12 +1,16 @@
 // @ts-check
 import eslint from '@eslint/js';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', '**/drizzle/**', '**/coverage/**', '*.mjs'] },
+  { ignores: ['**/dist/**', '**/node_modules/**', '**/drizzle/**', '**/coverage/**', 'eslint.config.mjs'] },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+
+  // TypeScript app code: type-aware rules.
   {
+    files: ['**/*.ts'],
+    extends: [...tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
     },
@@ -21,5 +25,11 @@ export default tseslint.config(
       // Nest DTOs and modules use empty classes on purpose.
       '@typescript-eslint/no-extraneous-class': 'off',
     },
+  },
+
+  // Plain Node scripts (Claude hooks, tooling).
+  {
+    files: ['**/*.mjs'],
+    languageOptions: { globals: globals.node },
   },
 );

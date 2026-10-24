@@ -59,10 +59,10 @@ Rules for the agent: [CLAUDE.md](CLAUDE.md). Notes on where the AI was wrong: [A
 | `PreToolUse` (Bash) — `.claude/hooks/block-dangerous-commands.mjs` | Blocks `rm -rf`, `git push --force`, `git reset --hard`, `--no-verify`, `docker compose down -v`, `drizzle-kit push` | These destroy work or data, or skip our checks |
 | `PreToolUse` (Edit/Write) — `.claude/hooks/protect-migrations.mjs` | Blocks edits to committed migration files | Migrations must come from `yarn db:generate`; editing an applied one silently breaks other databases |
 | `PostToolUse` (Edit/Write) — `.claude/hooks/typecheck-after-edit.mjs` | Type-checks the app that was just edited and feeds errors back to the agent | Catches broken code at the edit, not at commit time |
-| `Stop` — `.claude/hooks/verify-before-stop.mjs` | Runs lint and unit tests; the agent can't finish while they fail | The agent must not report "done" on red code |
-| Git `pre-commit` (Husky) | Runs `yarn check` (typecheck + lint + unit tests), same as CI | Nothing unchecked reaches the history, whether a human or the agent commits |
+| `Stop` — `.claude/hooks/verify-before-stop.mjs` | Runs `yarn verify` (typecheck + lint + tests) when code changed; the agent can't finish while it fails | The agent must not report "done" on red code |
+| Git `pre-commit` (Husky) | Runs `yarn verify` (typecheck + lint + unit tests), same as CI | Nothing unchecked reaches the history, whether a human or the agent commits |
 
-All hooks are Node scripts, so they work on macOS, Linux and Windows without extra setup. Husky installs itself on `yarn install`.
+All hooks are Node scripts, so they work on macOS, Linux and Windows without extra setup. Husky installs itself on `yarn install`. CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs the same `yarn verify`.
 
 ## Repo layout
 

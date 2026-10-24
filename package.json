@@ -12,7 +12,7 @@
     "typecheck": "yarn workspaces run typecheck",
     "lint": "eslint .",
     "test": "yarn workspaces run test",
-    "check": "yarn typecheck && yarn lint && yarn test",
+    "verify": "yarn typecheck && yarn lint && yarn test",
     "db:generate": "yarn workspace @eztask/api db:generate",
     "prepare": "husky"
   },
@@ -21,6 +21,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.5",
     "eslint": "^10.13.0",
+    "globals": "^17.13.0",
     "husky": "^9.1.7",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15",
