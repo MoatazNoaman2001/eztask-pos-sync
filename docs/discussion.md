@@ -175,7 +175,7 @@ orders/
 
 **Found while doing it:** the host already runs a Windows PostgreSQL service on 5432, so connecting to "localhost:5432" reached the wrong database and failed authentication. The host port is now `POSTGRES_HOST_PORT`.
 
-**Open:** a reviewer cloning fresh needs values. To decide: how they get them (see Open items).
+**Fresh clone:** options were a `yarn setup` script, a committed `dev.env`, or filling values by hand. **Decision: `yarn setup`**, run automatically by `yarn install`. No values in the repo, still 4 commands from a fresh clone.
 
 ---
 
@@ -187,4 +187,4 @@ orders/
 - [x] `CLAUDE.md`
 - [x] `.claude/settings.json`, hooks, pre-commit
 - [ ] `DECISIONS.md` (distil from these docs)
-- [ ] How a reviewer gets `.env` values on a fresh clone
+- [x] How a reviewer gets `.env` values on a fresh clone (`yarn setup`)

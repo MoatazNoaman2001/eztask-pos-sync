@@ -8,13 +8,14 @@
     "node": ">=22"
   },
   "scripts": {
+    "setup": "node scripts/setup-env.mjs",
     "build": "yarn workspaces run build",
     "typecheck": "yarn workspaces run typecheck",
     "lint": "eslint .",
     "test": "yarn workspaces run test",
     "verify": "yarn typecheck && yarn lint && yarn test",
     "db:generate": "yarn workspace @eztask/api db:generate",
-    "prepare": "husky"
+    "prepare": "husky && node scripts/setup-env.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

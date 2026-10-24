@@ -1,6 +1,11 @@
 # Configuration
 
-All keys are listed, without values, in [`local.env`](../local.env). Copy it to `.env` (git-ignored) and fill it in.
+All keys are listed, without values, in [`local.env`](../local.env). `yarn setup` (also run by `yarn install`) creates a git-ignored `.env` from it:
+- local development values, a **random** database password, and the first **free** host port from 5432 (checked by connecting, since Windows lets a bind succeed on a port Docker already serves);
+- never overwrites an existing `.env`;
+- fails if `local.env` gains a key the script has no value for, so the two can't drift apart.
+
+Edit `.env` freely afterwards; delete it and run `yarn setup` to start over.
 
 - **docker compose** reads `.env` automatically. The compose file has **no values and no defaults**: every value is `${VAR:?…}`, so a missing one stops compose with a clear error instead of starting with a blank.
 - **yarn scripts** that run outside Docker (e.g. `db:migrate`) load it with Node's built-in `--env-file-if-exists`; no dotenv package.

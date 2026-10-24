@@ -10,16 +10,18 @@ Needs Docker, Node 22 and Yarn 1.
 
 ```bash
 git clone git@github.com:MoatazNoaman2001/eztask-pos-sync.git && cd eztask-pos-sync
-yarn install
+yarn install                      # also creates .env (see below) and installs git hooks
 docker compose up --build -d      # the system: postgres, migrate, api-1, api-2, lb, fake-pos
 yarn test:chaos                   # restarts the stack with every POS failure mode on, then runs the chaos test
 ```
+
+`yarn install` runs `yarn setup`, which creates a git-ignored `.env` from the keys in [local.env](local.env): local values, a random database password, and a free host port for Postgres. It never overwrites an existing `.env`. Details: [docs/configuration.md](docs/configuration.md).
 
 | Service | URL | What it is |
 |---|---|---|
 | `lb` | http://localhost:3000 | Load balancer in front of `api-1` and `api-2` |
 | `fake-pos` | http://localhost:4000 | Fake POS (failure modes set in `docker-compose.yml`) |
-| `postgres` | localhost:5432 | Database |
+| `postgres` | localhost:`POSTGRES_HOST_PORT` (from `.env`) | Database |
 
 Stop everything: `docker compose down` (add `-v` to wipe the database).
 
