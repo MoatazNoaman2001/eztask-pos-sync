@@ -20,6 +20,8 @@ yarn test:chaos              # takes minutes (rate limit), needs compose running
 yarn db:generate             # after editing schema.ts
 ```
 
+Env keys: `local.env` (names only, never put values there). Meanings and defaults: `docs/configuration.md`.
+
 ## Hard rules
 1. **Never call the POS from an HTTP request path.** Endpoints only write to Postgres; workers talk to the POS.
 2. **`/pay` writes `checks.status = 'paid'` and the `pos_sync` row in one transaction.** Same for `/cancel`. No separate step that could be lost.
