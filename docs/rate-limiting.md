@@ -1,6 +1,6 @@
 # Rate limiting
 
-Status: **Proposed**
+Status: **Built** (`apps/api/src/sync/repositories/rate-limit.repository.ts`)
 
 ## Requirement
 
@@ -27,7 +27,7 @@ SELECT count(*), min(sent_at) FROM pos_request_log
 
 - The lock is per restaurant, so restaurants never wait on each other.
 - Old log rows are pruned periodically.
-- Uses Postgres `now()` → no clock drift between instances.
+- Uses Postgres time → no clock drift between instances. Specifically `clock_timestamp()`, not `now()`: `now()` is the transaction's start time, and a caller that waited on the lock would log its request too early ([AI_NOTES.md](../AI_NOTES.md) #3).
 
 ## Fairness
 

@@ -10,6 +10,8 @@ export interface ApiConfig {
   posBaseUrl: string;
   posHttpTimeoutMs: number;
   syncLeaseMs: number;
+  /** Off in tests that drive the worker by hand (SyncWorker.processDue). */
+  syncWorkerEnabled: boolean;
   syncPollIntervalMs: number;
   syncBatchSize: number;
   rateLimitMaxRequests: number;
@@ -25,6 +27,7 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     posBaseUrl: readRequired(env, 'POS_BASE_URL'),
     posHttpTimeoutMs: readInt(env, 'POS_HTTP_TIMEOUT_MS', 10_000),
     syncLeaseMs: readInt(env, 'SYNC_LEASE_MS', 30_000),
+    syncWorkerEnabled: readBool(env, 'SYNC_WORKER_ENABLED', true),
     syncPollIntervalMs: readInt(env, 'SYNC_POLL_INTERVAL_MS', 1_000),
     syncBatchSize: readInt(env, 'SYNC_BATCH_SIZE', 10),
     rateLimitMaxRequests: readInt(env, 'RATE_LIMIT_MAX_REQUESTS', 4),
@@ -45,6 +48,14 @@ function readRequired(env: NodeJS.ProcessEnv, key: string): string {
   const value = env[key];
   if (!value) throw new Error(`${key} is required`);
   return value;
+}
+
+function readBool(env: NodeJS.ProcessEnv, key: string, fallback: boolean): boolean {
+  const raw = env[key]?.trim();
+  if (raw === undefined || raw === '') return fallback;
+  if (raw === 'true') return true;
+  if (raw === 'false') return false;
+  throw new Error(`${key} must be "true" or "false", got "${raw}"`);
 }
 
 function readInt(env: NodeJS.ProcessEnv, key: string, fallback: number): number {

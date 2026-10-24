@@ -26,7 +26,7 @@ Columns: **G** = guarantee affected (1–5, see [architecture.md](architecture.m
 | B2 | Requests bunch up in the network → POS counts 6 in its window | 4 | Our limit is 4 / 10 s; 429 → reschedule, not a failure | Rare 429s still possible, handled |
 | B3 | Unknown outcomes double the cost (create + lookup), a struggling restaurant eats its budget on lookups | 4 | Lookups only after unknown, never routinely | Slower recovery for that restaurant only; others unaffected |
 | B4 | Worker sleeps waiting for one restaurant's budget → others starve | 4 | Never sleep: reschedule the row and move on | None |
-| B5 | Clock drift between instances breaks windows | 4 | All timestamps from Postgres `now()` | None |
+| B5 | Clock drift between instances breaks windows | 4 | All timestamps from Postgres; the limiter uses `clock_timestamp()` so a lock wait can't backdate a request | None |
 
 ## C. Operational risks
 

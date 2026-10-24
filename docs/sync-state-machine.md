@@ -1,6 +1,6 @@
 # Sync state machine
 
-Status: **Proposed** — to be reviewed before coding.
+Status: **Built** (`apps/api/src/sync`). Decision table: `domain/next-action.ts`; worker: `sync.worker.ts` + `services/sync-processor.service.ts`. Tests: `apps/api/test/sync.int.spec.ts`.
 
 ## Idea: desired state vs. known POS state
 

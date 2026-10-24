@@ -40,6 +40,7 @@ const values = {
   POS_BASE_URL: `http://localhost:${fakePosPort}`,
   POS_HTTP_TIMEOUT_MS: 10000,
   SYNC_LEASE_MS: 30000,
+  SYNC_WORKER_ENABLED: 'true',
   SYNC_POLL_INTERVAL_MS: 1000,
   SYNC_BATCH_SIZE: 10,
   RATE_LIMIT_MAX_REQUESTS: 4,

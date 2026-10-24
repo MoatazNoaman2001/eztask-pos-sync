@@ -190,6 +190,17 @@ orders/
 
 ---
 
+## 13. Building the sync worker
+
+- **One POS call per step**, up to 4 steps per claim (e.g. lookup → create). Each step renews the lease first, which also re-reads `desired`, so a cancel that lands mid-claim is seen at the next step.
+- **Commit `unknown` before every create.** 5xx and timeouts leave it `unknown` (next step: lookup). 429 and 4xx set it back to `none`: the POS refused before creating anything.
+- **Guarded writes.** Every worker write has `lease_owner = me`; status writes also have `desired = what I acted on`. A false return means "something changed under me": re-read and decide again.
+- **Lookup/cancel failures are just "failed"** (safe to repeat). Only a create is ambiguous, and `unknown` already covers it, so the client needs four outcome kinds, not five.
+- **Rate limiter bugs found by tests** (AI_NOTES #3): SQL precedence in an embedded fragment, and `now()` vs `clock_timestamp()` under lock waits.
+- **Tests run the real fake POS in-process** with `StubChaos`, so each failure mode is triggered on purpose. Mutation-checked: dropping "commit unknown first", "lookup after unknown" or the `desired` guard each fails tests.
+
+---
+
 ## Open items
 
 - [ ] Final review of the Proposed docs ([sync-state-machine](sync-state-machine.md), [rate-limiting](rate-limiting.md), [risk](risk.md), [schema](schema.md), [api](api.md))

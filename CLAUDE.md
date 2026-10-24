@@ -29,7 +29,7 @@ Env keys: `local.env` (names only, never put values there). Meanings and default
 3. **Commit `pos_state = 'unknown'` before sending a create.** After `unknown`, the next POS call is always `GET /orders?externalRef=`, never a create.
 4. **Workers never write `desired`.** Only `/pay` and `/cancel` do. Workers update explicit columns, never the whole row, and every worker write has `WHERE lease_owner = :me`.
 5. **Every POS call takes a rate-limit token first** — create, lookup and cancel alike.
-6. **Time comes from Postgres `now()`**, not `Date.now()`, for leases, `next_attempt_at` and rate-limit windows.
+6. **Time comes from Postgres**, not `Date.now()`, for leases, `next_attempt_at` and rate-limit windows. `now()` is the transaction's *start*: after waiting on a lock (rate limiter) use `clock_timestamp()`. Bracket SQL fragments you embed in other expressions.
 7. **Never sleep in a worker** waiting for rate budget. Reschedule the row and move on.
 8. **422 → `failed`, no auto-retry. 429 → reschedule, not counted as an attempt.** Timeout/connection error → `unknown`. Temporary errors retry forever (backoff capped at 60 s) — never add a max-attempts cutoff.
 9. **HTTP timeout (10 s) must stay below the lease (30 s).** Both live in one config file; change them together.
@@ -38,6 +38,8 @@ Env keys: `local.env` (names only, never put values there). Meanings and default
 12. **Strict TypeScript:** no `any`, no `@ts-ignore`, no non-null `!` to silence errors.
 13. **Do not "fix" the fake POS.** It is non-idempotent and fails on purpose, as the spec says.
 14. **Layers inside each feature module:** `controllers/` (HTTP only) → `services/` (rules) → `repositories/` (the only code that touches storage/SQL). Plus `dto/` and `types/`. A service never imports the Drizzle client.
+
+Some rules above came from mistakes made while building this; the stories are in `AI_NOTES.md`.
 
 ## When you change the design
 Update the matching file in `docs/` and add a short entry to `docs/discussion.md` saying what changed and why.

@@ -14,11 +14,17 @@ export interface TestApp {
   close(): Promise<void>;
 }
 
-/** The real API (real Postgres, real modules) wired exactly as in production. */
-export async function createTestApp(): Promise<TestApp> {
-  process.env.DATABASE_URL = testDatabaseUrl();
-  // These tests never reach the POS; the URL just has to be valid.
-  process.env.POS_BASE_URL = 'http://pos.invalid';
+/**
+ * The real API (real Postgres, real modules) wired exactly as in production.
+ * The worker loop is off: tests that need it drive it by hand with SyncWorker.processDue().
+ */
+export async function createTestApp(env: Record<string, string> = {}): Promise<TestApp> {
+  Object.assign(process.env, {
+    DATABASE_URL: testDatabaseUrl(),
+    POS_BASE_URL: 'http://pos.invalid', // overridden by tests that talk to a POS
+    SYNC_WORKER_ENABLED: 'false',
+    ...env,
+  });
 
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
   const app = configureApp(moduleRef.createNestApplication());

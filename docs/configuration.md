@@ -20,7 +20,7 @@ Edit `.env` freely afterwards; delete it and run `yarn setup` to start over.
 
 ## api
 
-Status: **Partly built**: config loading and validation done (`apps/api/src/config/api.config.ts`); sync settings used once the worker lands.
+Status: **Built** (`apps/api/src/config/api.config.ts`).
 
 | Variable | Default | Meaning |
 |---|---|---|
@@ -30,6 +30,7 @@ Status: **Partly built**: config loading and validation done (`apps/api/src/conf
 | `POS_BASE_URL` | — (required) | e.g. `http://fake-pos:4000` |
 | `POS_HTTP_TIMEOUT_MS` | `10000` | Must stay **below** `SYNC_LEASE_MS` ([why](pos-integration.md#timeout-values-draft)) |
 | `SYNC_LEASE_MS` | `30000` | How long a worker owns a claimed row |
+| `SYNC_WORKER_ENABLED` | `true` | Run the sync worker in this instance. Tests that drive the worker by hand set `false` |
 | `SYNC_POLL_INTERVAL_MS` | `1000` | How often each worker looks for due rows |
 | `SYNC_BATCH_SIZE` | `10` | Rows claimed per poll |
 | `RATE_LIMIT_MAX_REQUESTS` | `4` | Our side of the POS limit (POS allows 5; 1 kept as margin) |

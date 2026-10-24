@@ -6,8 +6,8 @@
 | [discussion.md](discussion.md) | Running log of questions, answers and decisions, in order | Living |
 | [architecture.md](architecture.md) | Components, deployment topology, request and sync flow | Agreed |
 | [pos-integration.md](pos-integration.md) | How the POS behaves and how we react to each response | Agreed |
-| [sync-state-machine.md](sync-state-machine.md) | Per-check sync model, worker claim/lease, ordering of create/cancel | Proposed |
-| [rate-limiting.md](rate-limiting.md) | Shared per-restaurant limiter across API instances | Proposed |
+| [sync-state-machine.md](sync-state-machine.md) | Per-check sync model, worker claim/lease, ordering of create/cancel | Built |
+| [rate-limiting.md](rate-limiting.md) | Shared per-restaurant limiter across API instances | Built |
 | [schema.md](schema.md) | Tables, columns, enums, indexes; who writes which column | Built |
 | [api.md](api.md) | Endpoints, check transitions, status codes, `GET /sync` response | Built |
 | [fake-pos.md](fake-pos.md) | Fake POS behaviour, request pipeline, choices where the spec is silent, tests | Built |
